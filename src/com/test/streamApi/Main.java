@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Main {
     public static void main(String[] args) {
@@ -57,7 +58,10 @@ public class Main {
         Map.Entry<String, Long> entry = strings.stream().collect(Collectors.groupingBy(s -> s, Collectors.counting()))
                 .entrySet().stream().max(Map.Entry.comparingByValue()).get();
         System.out.println(entry.getKey() + " - " + entry.getValue());
-
+        //Find second-Highest repeated word
+        strings.stream().collect(Collectors.groupingBy(s -> s, Collectors.counting())).entrySet().stream().sorted(Comparator.comparing(Map.Entry<String, Long>::getValue).reversed()).skip(1L).limit(1L).forEach(e->{
+            System.out.println("Second Highest : "+e.getKey());
+        });
 
         //Find highest paid employees in each department
         Employee emp1 = new Employee("Sales", 101, "Devesh", "Kharghar", 1200.0);
@@ -123,9 +127,26 @@ public class Main {
         System.out.println();
         System.out.println("Reverse a string");
         String temp3 = "Devesh";
-        String reversed = temp3.chars().mapToObj(s->String.valueOf((char)s)).reduce((s1, s2)-> s2+s1).get();
+        var reversed = temp3.chars().mapToObj(s->String.valueOf((char)s)).reduce((s1, s2)-> s2+s1).get();
         System.out.println(reversed);
 
+        //Reverse a string  by words
+        System.out.println();
+        String stringOfWords = "CR7 is the only GOAT";
+        String s = Arrays.asList(stringOfWords.split("\\s")).stream().reduce((s1, s2) -> s2 +" "+ s1).get();
+        System.out.println(s);
+
+        //Reverse a List
+        List<String> clothes = new ArrayList<>();
+        clothes.add("T-shirt");
+        clothes.add("Pants");
+        clothes.add("Socks");
+        clothes.add("Shoes");
+
+        System.out.println("Before reversing:");
+        System.out.println(clothes);
+
+        List<String> reverseClothes = IntStream.range(0, clothes.size()).map(i -> clothes.size() - 1- i).mapToObj(clothes::get).collect(Collectors.toList());
 
     }
 
