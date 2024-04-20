@@ -143,10 +143,35 @@ public class Main {
         clothes.add("Socks");
         clothes.add("Shoes");
 
-        System.out.println("Before reversing:");
+        System.out.println("\nBefore reversing:");
         System.out.println(clothes);
 
         List<String> reverseClothes = IntStream.range(0, clothes.size()).map(i -> clothes.size() - 1- i).mapToObj(clothes::get).collect(Collectors.toList());
+        System.out.println(reverseClothes);
+
+
+        System.out.println("\n");
+        System.out.println("Flattern the List of objects into list of integer");
+        Object[] arraysss = { 1, 2, new Object[]{ 3, 4, new Object[]{ 5 }, 6, 7 }, 8, 9, 10 };
+        Integer[] array1 = Arrays.stream(arraysss).flatMap(t -> {
+            if (t instanceof Integer) {
+                return Stream.of((Integer)t);
+            } else if (t instanceof Object[]) {
+                return Arrays.stream((Object[]) t).flatMap(obj -> {
+                    if (obj instanceof Integer) {
+                        return Stream.of((Integer)obj);
+                    } else if (obj instanceof Object[]) {
+                        return Arrays.stream((Object[]) obj);
+                    } else {
+                        return Stream.empty();
+                    }
+                });
+            } else {
+                return Stream.empty();
+            }
+        }).toArray(Integer[]::new);
+        Arrays.stream(array1).forEach(j->System.out.print(j.intValue()+" "));
+
 
     }
 
