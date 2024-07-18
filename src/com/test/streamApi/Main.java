@@ -17,18 +17,22 @@ public class Main {
         list1.stream().filter(t -> t % 2 == 0).forEach(t -> System.out.println(t));
 
 
+
         // You got a string, count the number of vowels in it.
         System.out.println();
         String temp = "jsahdjkhioweuiewqjs";
         long count = temp.chars().filter(t -> t == 'a' || t == 'e' || t == 'i' || t == 'o' || t == 'u').count();
         System.out.println(count);
+
+
         System.out.println();
 
         //Sort a String in Descending
         List<Character> sortedChars = temp.chars().mapToObj(s -> (char) s).sorted(Comparator.reverseOrder()).collect(Collectors.toList());
         StringBuilder sb = new StringBuilder();
-        sortedChars.stream().forEach(s -> sb.append(s));
+        sortedChars.forEach(s -> sb.append(s));
         System.out.println("Sorted : " + sb.toString());
+//        String.join("", sortedChars);
 
         // Sort the array in descending order
         int arr[] = {32, 34, 44, 3, 4, 5, 45, 44, 44};
@@ -46,7 +50,7 @@ public class Main {
 
         // Find the duplicated words in a string using stream API
         String sentence = "Devesh is GOAT of All time Devesh is DDevesh GOAT";
-        Map<String, Long> collect = Arrays.asList(sentence.split("\\s")).stream().map(str -> str)
+        Map<String, Long> collect = Arrays.asList(sentence.split("\\s")).stream()
                 .collect(Collectors.groupingBy(s -> s, Collectors.counting()));
         collect.forEach((k, v) -> System.out.println(k + "-" + v));
 
@@ -54,12 +58,21 @@ public class Main {
         // Find most repeated element in a array using steam API -- Most IMP
         System.out.println();
         List<String> strings = Arrays.asList("java", "devesh", "java", "devesh", "java", "opts", "mouse", "wqoi");
+
+        strings.stream().collect(Collectors.groupingBy(s->s, Collectors.counting())).entrySet().stream().max(Map.Entry.comparingByValue()).get();
+
+        strings.stream()
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet().stream().sorted(Comparator.comparing(Map.Entry<String, Long>::getValue)
+                        .reversed()).skip(1L).limit(1L);
+
         // First we need to group the data and count
         Map.Entry<String, Long> entry = strings.stream().collect(Collectors.groupingBy(s -> s, Collectors.counting()))
                 .entrySet().stream().max(Map.Entry.comparingByValue()).get();
         System.out.println(entry.getKey() + " - " + entry.getValue());
         //Find second-Highest repeated word
-        strings.stream().collect(Collectors.groupingBy(s -> s, Collectors.counting())).entrySet().stream().sorted(Comparator.comparing(Map.Entry<String, Long>::getValue).reversed()).skip(1L).limit(1L).forEach(e->{
+        strings.stream().collect(Collectors.groupingBy(s -> s, Collectors.counting())).entrySet().stream()
+                .sorted(Comparator.comparing(Map.Entry<String, Long>::getValue).reversed()).skip(1L).limit(1L).forEach(e->{
             System.out.println("Second Highest : "+e.getKey());
         });
 
@@ -90,12 +103,15 @@ public class Main {
 
         System.out.println();
 
+        //Get the highest paid employee from each department
+        Map<String, Optional<Employee>> collect5 = empList.stream().collect(Collectors.groupingBy(Employee::getDepartment, Collectors.maxBy(Comparator.comparingDouble(Employee::getSalary))));
+
         //Counting the employees based on Department
-        Map<String, Long> collect4 = empList.stream().collect(Collectors.groupingBy(s -> s.getDepartment(), Collectors.counting()));
+        Map<String, Long> collect4 = empList.stream().collect(Collectors.groupingBy(Employee::getDepartment, Collectors.counting()));
         collect4.forEach((k,v)->System.out.println("k - "+k+" v : "+v));
 
         //Sorting by salary and then sorting by EmpId
-        System.out.println("");
+        System.out.println();
         System.out.println("Sorting by salary and then sorting by EmpId");
         empList.stream().map(s-> s).sorted(Comparator.comparing(Employee::getSalary).reversed().thenComparing(Employee::getEmpID)).forEach(s-> System.out.println(s.toString()));
 
@@ -145,6 +161,8 @@ public class Main {
 
         System.out.println("\nBefore reversing:");
         System.out.println(clothes);
+        
+        IntStream.range(0, clothes.size()).map(i-> clothes.size()-1-i).mapToObj(clothes::get).collect(Collectors.toList());
 
         List<String> reverseClothes = IntStream.range(0, clothes.size()).map(i -> clothes.size() - 1- i).mapToObj(clothes::get).collect(Collectors.toList());
         System.out.println(reverseClothes);
@@ -172,6 +190,26 @@ public class Main {
         }).toArray(Integer[]::new);
         Arrays.stream(array1).forEach(j->System.out.print(j.intValue()+" "));
 
+        System.out.println("\n");
+        System.out.println("Flattern the List of objects into list of integer");
+        Object[] arrayssss = { 1, 2, new Object[]{ 3, 4, new Object[]{ 5 }, 6, 7 }, 8, 9, 10 };
+        Integer[] array2 = Arrays.stream(arrayssss).flatMap(obj1 -> {
+            if (obj1 instanceof Integer) {
+                return Stream.of(obj1);
+            } else if (obj1 instanceof Object[]) {
+                return Arrays.stream((Object[]) obj1).flatMap(obj2 -> {
+                    if (obj2 instanceof Integer) {
+                        return Stream.of(obj2);
+                    } else if (obj2 instanceof Object[]) {
+                        return Arrays.stream((Object[]) obj2);
+                    } else {
+                        return Stream.empty();
+                    }
+                });
+            } else {
+                return Stream.empty();
+            }
+        }).toArray(Integer[]::new);
 
     }
 
